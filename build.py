@@ -325,6 +325,59 @@ TEMPLATE = """<!DOCTYPE html>
     margin-right: .5rem;
     transform: translateY(2px);
   }
+
+  /* Stimmungs-Schalter links neben dem Titel */
+  button.mood-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: .25rem .4rem;
+    margin-left: .4rem;
+    border-radius: 999px;
+    color: var(--werther-blau-hell);
+    font-family: inherit;
+    font-variant: small-caps;
+    letter-spacing: .08em;
+    font-size: .98rem;
+    transition: color .2s;
+  }
+  button.mood-switch:hover { color: var(--werther-gelb-hell); }
+  .ms-track {
+    position: relative;
+    width: 2.15em;
+    height: 1.2em;
+    border-radius: 999px;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.35);
+    transition: background .2s, border-color .2s;
+    flex: none;
+  }
+  .ms-knob {
+    position: absolute;
+    top: 50%;
+    left: .12em;
+    width: .9em;
+    height: .9em;
+    border-radius: 50%;
+    background: var(--paper);
+    transform: translateY(-50%);
+    transition: left .2s, background .2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,.35);
+  }
+  button.mood-switch[aria-pressed="true"] {
+    color: var(--werther-gelb-hell);
+  }
+  button.mood-switch[aria-pressed="true"] .ms-track {
+    background: var(--werther-gelb);
+    border-color: var(--werther-gelb);
+  }
+  button.mood-switch[aria-pressed="true"] .ms-knob {
+    left: calc(100% - 1.02em);
+    background: #2e3a55;
+  }
   nav.topbar ul {
     display: flex;
     gap: 1.2rem;
@@ -354,25 +407,6 @@ TEMPLATE = """<!DOCTYPE html>
   nav.topbar a.navlink.active {
     border-bottom-color: var(--werther-gelb);
     background: rgba(255,255,255,.08);
-  }
-  nav.topbar button.navlink::before {
-    content: "";
-    display: inline-block;
-    width: .62em;
-    height: .62em;
-    margin-right: .45em;
-    border-radius: 50%;
-    border: 1.5px solid var(--werther-gelb-hell);
-    background: transparent;
-    transform: translateY(.02em);
-    transition: background .2s;
-  }
-  nav.topbar button.navlink[aria-pressed="true"] {
-    border-bottom-color: var(--werther-gelb);
-  }
-  nav.topbar button.navlink[aria-pressed="true"]::before {
-    background: linear-gradient(135deg, var(--werther-gelb) 50%, #2e3a55 50%);
-    border-color: var(--werther-gelb);
   }
 
   /* ---------- Kopf ---------- */
@@ -684,62 +718,98 @@ TEMPLATE = """<!DOCTYPE html>
     aside.timeline { display: none; }
   }
 
-  /* ---------- Abonnieren ---------- */
-  section.subscribe {
-    max-width: 44rem;
-    margin: 0 auto;
-    padding: 0 1.2rem 4rem;
+  /* ---------- Abo-Overlay ---------- */
+  dialog.subscribe-dialog {
+    border: none;
+    border-radius: 16px;
+    padding: 0;
+    width: min(92vw, 36rem);
+    max-height: 86vh;
+    box-shadow: 0 24px 70px -20px rgba(15, 23, 42, .55);
+    font-family: -apple-system, "Segoe UI", system-ui, Roboto, sans-serif;
+    font-size: .98rem;
+    line-height: 1.55;
+    color: #2b3245;
+    background: #fdfcf8;
   }
-  .sub-intro { text-align: justify; hyphens: auto; }
-  .feed-cards {
+  dialog.subscribe-dialog::backdrop {
+    background: rgba(21, 28, 48, .55);
+    backdrop-filter: blur(3px);
+  }
+  .sd-head {
     display: flex;
-    gap: 1.4rem;
-    margin: 1.8rem 0;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.4rem;
+    background: linear-gradient(120deg, var(--werther-blau), #2e3a55);
+    color: #fff;
+    position: sticky;
+    top: 0;
+  }
+  .sd-head h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: .01em;
+  }
+  .sd-close {
+    background: rgba(255,255,255,.12);
+    border: none;
+    color: #fff;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .sd-close:hover { background: rgba(255,255,255,.28); }
+  .sd-body { padding: 1.3rem 1.4rem 1.5rem; }
+  .sd-intro { margin: 0 0 1.1rem; }
+  .feed-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .9rem;
+    margin: 0 0 1.2rem;
   }
   .feed-card {
-    flex: 1 1 14rem;
-    background: #fffdf6;
-    border: 1px solid var(--line);
-    border-top: 4px solid var(--werther-blau-hell);
-    border-radius: 2px;
-    padding: 1.1rem 1.4rem 1.2rem;
-    box-shadow: 0 1px 3px rgba(70,58,32,.10);
+    background: #f2f0ea;
+    border: 1px solid #e3dfd3;
+    border-radius: 12px;
+    padding: .9rem 1rem 1rem;
     text-align: center;
   }
-  .feed-card.fresh { border-top-color: var(--werther-gelb); }
-  .feed-card h3 {
-    font-family: "Grenze Gotisch", serif;
-    font-weight: 600;
-    font-size: 1.45rem;
-    margin: 0 0 .3rem;
-    color: var(--werther-blau);
+  .feed-card.fresh {
+    background: #fdf6e0;
+    border-color: var(--werther-gelb);
+    box-shadow: 0 0 0 1px var(--werther-gelb);
   }
-  .feed-years { margin: 0 0 .5rem; color: var(--ink-soft); font-size: .98rem; }
-  .feed-status { margin: 0 0 .8rem; font-style: italic; font-size: .98rem; min-height: 1.3em; }
-  .feed-card.fresh .feed-status { color: var(--werther-blau); font-weight: 500; }
+  .feed-card h3 { margin: 0 0 .15rem; font-size: 1.02rem; color: var(--werther-blau); }
+  .feed-years { margin: 0 0 .45rem; font-size: .82rem; color: #6b7280; }
+  .feed-status { margin: 0 0 .7rem; font-size: .85rem; min-height: 2.5em; }
+  .feed-card.fresh .feed-status { color: #8a6d1c; font-weight: 600; }
   a.feed-link {
     display: inline-block;
     font-family: ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: .92rem;
+    font-size: .82rem;
     color: var(--werther-blau);
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 3px;
-    padding: .3rem .8rem;
+    background: #fff;
+    border: 1px solid #d8d3c4;
+    border-radius: 8px;
+    padding: .35rem .8rem;
     text-decoration: none;
+    transition: border-color .15s;
   }
-  a.feed-link:hover { border-color: var(--werther-gelb); }
-  .howto h3 {
-    font-family: "Grenze Gotisch", serif;
-    font-weight: 600;
-    font-size: 1.45rem;
-    color: var(--werther-blau);
-    margin: 1.6rem 0 .6rem;
+  a.feed-link:hover { border-color: var(--werther-blau); }
+  .sd-sub { margin: 0 0 .5rem; font-size: 1.02rem; color: var(--werther-blau); }
+  .sd-steps { margin: 0; padding-left: 1.25rem; }
+  .sd-steps li { margin-bottom: .6em; }
+  .sd-steps li::marker { color: var(--werther-gelb); font-weight: 700; }
+  .sd-steps a { color: var(--werther-blau); }
+  @media (max-width: 560px) {
+    .feed-cards { grid-template-columns: 1fr; }
   }
-  .howto ol { padding-left: 1.3rem; }
-  .howto li { margin-bottom: .7em; }
-  .howto a { color: var(--werther-blau); }
 
   /* ---------- Fusszeile ---------- */
   footer {
@@ -789,11 +859,14 @@ TEMPLATE = """<!DOCTYPE html>
 
 <nav class="topbar">
   <a class="brand" href="#top"><span class="seal">&#9993;</span>Werther</a>
+  <button class="mood-switch" id="moodToggle" aria-pressed="false"
+      title="Werthers Stimmung in Briefen und Zeitstrahl anzeigen">
+    <span class="ms-track"><span class="ms-knob"></span></span>
+    <span class="ms-label">Stimmung</span>
+  </button>
   <ul>
     <li><a class="navlink active" href="#volltext">Volltext</a></li>
-    <li><a class="navlink" href="#abonnieren">Abonnieren</a></li>
-    <li><button class="navlink" id="moodToggle" aria-pressed="false"
-        title="Werthers Stimmung in Briefen und Zeitstrahl anzeigen">Stimmung</button></li>
+    <li><button class="navlink" id="subscribeOpen">Abonnieren</button></li>
   </ul>
 </nav>
 
@@ -818,52 +891,53 @@ TEMPLATE = """<!DOCTYPE html>
 {{BODY}}
 </main>
 
-<section class="subscribe" id="abonnieren" aria-label="Werthers Briefe abonnieren">
-  <h2 class="book-heading"><span>Werther schreibt &ndash; das Brief-Abo</span></h2>
-  <p class="sub-intro">Werthers Briefe lassen sich <em>in Echtzeit</em> miterleben:
-     Jeder Brief erscheint an seinem richtigen Datum &ndash; vom ersten Brief am
-     4.&nbsp;Mai bis zur letzten Nachricht in der Dezembernacht. Da die Handlung
-     zwei Jahre umspannt, laufen zwei zeitversetzte Durchl&auml;ufe parallel;
-     beim Einstieg zeigt das Abo automatisch alle bisherigen Briefe des
-     laufenden Durchlaufs.</p>
-
-  <div class="feed-cards">
-    <div class="feed-card" data-parity="1">
-      <h3>Zyklus A</h3>
-      <p class="feed-years">1771 = ungerade Jahre<br>(2025, 2027, &hellip;)</p>
-      <p class="feed-status" data-status></p>
-      <a class="feed-link" href="feed-a.xml">feed-a.xml</a>
-    </div>
-    <div class="feed-card" data-parity="0">
-      <h3>Zyklus B</h3>
-      <p class="feed-years">1771 = gerade Jahre<br>(2026, 2028, &hellip;)</p>
-      <p class="feed-status" data-status></p>
-      <a class="feed-link" href="feed-b.xml">feed-b.xml</a>
-    </div>
+<dialog class="subscribe-dialog" id="subscribeDialog" aria-labelledby="subTitle">
+  <div class="sd-head">
+    <h2 id="subTitle">&#128232; Werther schreibt</h2>
+    <button class="sd-close" data-close aria-label="Schlie&szlig;en">&times;</button>
   </div>
+  <div class="sd-body">
+    <p class="sd-intro">Werthers Briefe lassen sich <strong>in Echtzeit</strong>
+       abonnieren: Jeder Brief erscheint an seinem richtigen Datum &ndash; vom
+       4.&nbsp;Mai bis zur letzten Nachricht in der Dezembernacht. Da die
+       Handlung zwei Jahre umspannt, laufen zwei zeitversetzte Durchl&auml;ufe
+       parallel; beim Einstieg zeigt das Abo automatisch alle bisherigen Briefe
+       des laufenden Durchlaufs.</p>
 
-  <div class="howto">
-    <h3>So abonnierst du</h3>
-    <ol>
-      <li><strong>Als E-Mail:</strong> Feed-Adresse kopieren (Rechtsklick auf den
-          Link &rarr; &bdquo;Linkadresse kopieren&ldquo;) und bei einem
-          RSS-zu-Mail-Dienst wie <a href="https://blogtrottr.com">Blogtrottr</a>
-          oder <a href="https://follow.it">Follow.it</a> zusammen mit deiner
-          E-Mail-Adresse eintragen &ndash; fertig. Neue Briefe kommen als Mail.</li>
-      <li><strong>Mit Feedreader:</strong> In Apps wie
+    <div class="feed-cards">
+      <div class="feed-card" data-parity="1">
+        <h3>Zyklus A</h3>
+        <p class="feed-years">1771 = ungerade Jahre (2025, 2027, &hellip;)</p>
+        <p class="feed-status" data-status></p>
+        <a class="feed-link" href="feed-a.xml">feed-a.xml</a>
+      </div>
+      <div class="feed-card" data-parity="0">
+        <h3>Zyklus B</h3>
+        <p class="feed-years">1771 = gerade Jahre (2026, 2028, &hellip;)</p>
+        <p class="feed-status" data-status></p>
+        <a class="feed-link" href="feed-b.xml">feed-b.xml</a>
+      </div>
+    </div>
+
+    <h3 class="sd-sub">So abonnierst du</h3>
+    <ol class="sd-steps">
+      <li><strong>Als E-Mail:</strong> Feed-Adresse kopieren (Rechtsklick auf
+          den Link &rarr; &bdquo;Linkadresse kopieren&ldquo;) und zusammen mit
+          deiner E-Mail-Adresse bei einem RSS-zu-Mail-Dienst wie
+          <a href="https://blogtrottr.com">Blogtrottr</a> oder
+          <a href="https://follow.it">Follow.it</a> eintragen.</li>
+      <li><strong>Mit Feedreader:</strong> Die Feed-Adresse in Apps wie
           <a href="https://netnewswire.com">NetNewsWire</a> (Mac/iOS, gratis),
           <a href="https://feedly.com">Feedly</a> oder
-          <a href="https://www.inoreader.com">Inoreader</a> die Feed-Adresse
-          hinzuf&uuml;gen.</li>
+          <a href="https://www.inoreader.com">Inoreader</a> hinzuf&uuml;gen.</li>
       <li><strong>In Microsoft Teams</strong> (f&uuml;r Klassen): In
           <a href="https://make.powerautomate.com">Power Automate</a> einen Flow
-          mit dem Ausl&ouml;ser &bdquo;Wenn ein Feedelement ver&ouml;ffentlicht
-          wird&ldquo; (RSS) anlegen, die Feed-Adresse eintragen und als Aktion
-          &bdquo;In einem Kanal posten&ldquo; (Teams) w&auml;hlen &ndash; dann
-          erscheint jeder Brief automatisch im Klassenkanal.</li>
+          mit dem Trigger &bdquo;Wenn ein Feedelement ver&ouml;ffentlicht
+          wird&ldquo; (RSS) anlegen und als Aktion &bdquo;In einem Kanal
+          posten&ldquo; (Teams) w&auml;hlen.</li>
     </ol>
   </div>
-</section>
+</dialog>
 
 <footer>
   <div class="fleuron">&#10087;</div>
@@ -912,6 +986,19 @@ TEMPLATE = """<!DOCTYPE html>
   });
   karten.forEach(function (card) {
     if (+card.dataset.start === frischstes) card.classList.add('fresh');
+  });
+
+  // Abo-Overlay
+  var dlg = document.getElementById('subscribeDialog');
+  document.getElementById('subscribeOpen').addEventListener('click', function () {
+    dlg.showModal();
+  });
+  dlg.querySelector('[data-close]').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) {
+    if (e.target === dlg) dlg.close();  // Klick auf den Backdrop
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && dlg.open) dlg.close();
   });
 })();
 </script>
