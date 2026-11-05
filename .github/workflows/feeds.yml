@@ -32,6 +32,11 @@ jobs:
             git add feed-a.xml feed-b.xml
             git commit -m "Feed-Update $(date -u +%F)"
             git push
+          elif [ "$(( ($(date +%s) - $(git log -1 --format=%ct)) / 86400 ))" -ge 50 ]; then
+            # Leer-Commit alle 50 Tage, damit GitHub den Cron-Workflow
+            # in briefarmen Phasen (24.12.–3.5.) nicht deaktiviert
+            git commit --allow-empty -m "Keepalive $(date -u +%F)"
+            git push
           else
             echo "Keine neuen Briefe heute."
           fi
