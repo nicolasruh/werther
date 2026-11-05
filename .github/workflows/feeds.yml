@@ -1,0 +1,37 @@
+name: Feeds aktualisieren
+
+on:
+  schedule:
+    - cron: "23 4 * * *"   # täglich ~05:23/06:23 Uhr Schweizer Zeit
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [build.py, generate_feeds.py, moods.json, "sources/**"]
+
+permissions:
+  contents: write
+
+jobs:
+  feeds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Feeds generieren
+        run: python generate_feeds.py
+
+      - name: Änderungen committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- feed-a.xml feed-b.xml; then
+            git add feed-a.xml feed-b.xml
+            git commit -m "Feed-Update $(date -u +%F)"
+            git push
+          else
+            echo "Keine neuen Briefe heute."
+          fi
